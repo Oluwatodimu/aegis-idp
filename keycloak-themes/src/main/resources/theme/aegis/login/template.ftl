@@ -6,6 +6,7 @@
     2. <body> wraps the page in .aegis-split with the dark brand panel on the left.
     3. The logo comes from the theme, not the realm's HTML display name.
     4. "Secured by Aegis" line under the form.
+    5. Stylesheet links get ?v=<aegisAssetVersion> to beat the browser cache.
 -->
 <#import "field.ftl" as field>
 <#import "footer.ftl" as loginFooter>
@@ -64,7 +65,8 @@
         <@themeResourceTags.renderStyles themeResources.styles url.resourcesPath />
     <#elseif properties.styles?has_content>
         <#list properties.styles?split(' ') as style>
-            <link href="${url.resourcesPath}/${style}" rel="stylesheet" />
+            <#-- Aegis: ?v= so browsers fetch the new CSS after a rebuild (bump aegisAssetVersion) -->
+            <link href="${url.resourcesPath}/${style}<#if properties.aegisAssetVersion?has_content>?v=${properties.aegisAssetVersion}</#if>" rel="stylesheet" />
         </#list>
     </#if>
     <script type="importmap">
@@ -158,7 +160,7 @@
 </head>
 
 <body id="keycloak-bg" class="${properties.kcBodyClass!}" data-page-id="login-${pageId}">
-<#-- Aegis: split screen. The panel is hidden below 1024px (see aegis.css). -->
+<#-- Aegis: split screen. The panel is hidden below 860px (see aegis.css). -->
 <div class="aegis-split">
 <aside class="aegis-panel">
   <svg class="aegis-panel__mark" aria-hidden="true" viewBox="0 0 22 24" fill="none"><path d="M11 1.5 20 5v6.5c0 5.4-3.7 9.6-9 11-5.3-1.4-9-5.6-9-11V5l9-3.5Z" stroke="currentColor" stroke-width="0.45"/><path d="M11 6.5v11M6.5 9.5 11 12l4.5-2.5" stroke="currentColor" stroke-width="0.45" stroke-linecap="round"/></svg>

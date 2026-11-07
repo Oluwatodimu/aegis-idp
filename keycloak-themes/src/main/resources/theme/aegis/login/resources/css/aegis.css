@@ -80,7 +80,7 @@
 
 /* ---- Page: split screen (template.ftl) ---------------------------------
    Left: dark brand panel (always dark, also in dark mode).
-   Right: the form on a plain surface, no card. Below 1024px the panel hides
+   Right: the form on a plain surface, no card. Below 860px the panel hides
    and a small logo sits above the form.                                     */
 html, body, .login-pf body {
   margin: 0;
@@ -91,7 +91,7 @@ html, body, .login-pf body {
 }
 .aegis-split {
   display: grid;
-  grid-template-columns: clamp(380px, 42vw, 600px) minmax(0, 1fr);
+  grid-template-columns: clamp(340px, 42vw, 600px) minmax(0, 1fr);
   min-height: 100vh;
 }
 .aegis-panel {
@@ -193,7 +193,7 @@ div.kc-logo-text span {
   white-space: nowrap;
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 859px) {
   .aegis-split { display: block; }
   .aegis-panel { display: none; }
   .pf-v5-c-login__header { display: block; }
