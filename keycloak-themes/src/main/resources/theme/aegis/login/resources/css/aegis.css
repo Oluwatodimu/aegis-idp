@@ -1,0 +1,515 @@
+/* ==========================================================================
+   Aegis login theme
+   Sits on top of keycloak.v2 (PatternFly 5). Change colours in the token
+   blocks below; everything else reads from them.
+   ========================================================================== */
+
+/* ---- Tokens: light ------------------------------------------------------ */
+:root {
+  --aegis-ground: #F6F6F4;       /* page background */
+  --aegis-card: #FFFFFF;
+  --aegis-ink: #111214;          /* text, primary button */
+  --aegis-ink-hover: #2A2C31;
+  --aegis-on-ink: #FFFFFF;       /* text on the primary button */
+  --aegis-muted: #5B5F66;        /* secondary text (4.5:1 on white) */
+  --aegis-line: #E4E4E0;
+  --aegis-line-strong: #DADAD5;
+  --aegis-soft: #F4F4F1;         /* code blocks, key box */
+  --aegis-accent: #2B45D4;       /* focus ring, selected states */
+  --aegis-accent-hover: #1E33A8;
+  --aegis-accent-soft: #ECEFFD;
+  --aegis-danger: #A3241A;
+  --aegis-danger-line: #C9372C;
+  --aegis-danger-soft: #FCE9E7;
+  --aegis-warn: #5C4200;
+  --aegis-warn-soft: #FFFBF1;
+  --aegis-warn-line: #E2B44C;
+  --aegis-ok: #17603C;
+  --aegis-ok-soft: #E6F4EC;
+  --aegis-info: #1F2A6B;
+  --aegis-info-soft: #F5F7FF;
+  --aegis-info-line: #D5DCFA;
+  --aegis-radius: 16px;
+  --aegis-radius-sm: 8px;
+  --aegis-font: Geist, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --aegis-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --aegis-logo: url("../img/logo.svg");
+
+  /* feed the tokens into PatternFly */
+  --pf-v5-global--FontFamily--text: var(--aegis-font);
+  --pf-v5-global--FontFamily--heading: var(--aegis-font);
+  --pf-v5-global--FontFamily--monospace: var(--aegis-mono);
+  --pf-v5-global--primary-color--100: var(--aegis-ink);
+  --pf-v5-global--primary-color--200: var(--aegis-ink-hover);
+  --pf-v5-global--link--Color: var(--aegis-ink);
+  --pf-v5-global--link--Color--hover: var(--aegis-muted);
+  --pf-v5-global--danger-color--100: var(--aegis-danger-line);
+  --pf-v5-global--Color--100: var(--aegis-ink);
+  --pf-v5-global--Color--200: var(--aegis-muted);
+  --pf-v5-global--BorderColor--100: var(--aegis-line);
+  --pf-v5-global--BackgroundColor--100: var(--aegis-card);
+}
+
+/* ---- Tokens: dark (keycloak.v2 adds .pf-v5-theme-dark from the OS setting) */
+.pf-v5-theme-dark {
+  --aegis-ground: #0F1013;
+  --aegis-card: #17181C;
+  --aegis-ink: #F2F3F5;
+  --aegis-ink-hover: #FFFFFF;
+  --aegis-on-ink: #0F1013;
+  --aegis-muted: #A3A7AF;
+  --aegis-line: #2A2D34;
+  --aegis-line-strong: #3A3D45;
+  --aegis-soft: #1F2126;
+  --aegis-accent: #9FB0FF;
+  --aegis-accent-hover: #C2CCFF;
+  --aegis-accent-soft: #1D2240;
+  --aegis-danger: #FFB4AB;
+  --aegis-danger-line: #F2685C;
+  --aegis-danger-soft: #3A1714;
+  --aegis-warn: #F5D48A;
+  --aegis-warn-soft: #2E2410;
+  --aegis-warn-line: #8A6A1F;
+  --aegis-ok: #8FD3AE;
+  --aegis-ok-soft: #12291D;
+  --aegis-info: #C9D2FF;
+  --aegis-info-soft: #171C33;
+  --aegis-info-line: #2C3566;
+  --aegis-logo: url("../img/logo-light.svg");
+}
+
+/* ---- Page: split screen (template.ftl) ---------------------------------
+   Left: dark brand panel (always dark, also in dark mode).
+   Right: the form on a plain surface, no card. Below 1024px the panel hides
+   and a small logo sits above the form.                                     */
+html, body, .login-pf body {
+  margin: 0;
+  background: var(--aegis-card) !important;
+  font-family: var(--aegis-font);
+  color: var(--aegis-ink);
+  -webkit-font-smoothing: antialiased;
+}
+.aegis-split {
+  display: grid;
+  grid-template-columns: clamp(380px, 42vw, 600px) minmax(0, 1fr);
+  min-height: 100vh;
+}
+.aegis-panel {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 3.5rem;
+  background: #0F1013;
+  color: #FFFFFF;
+}
+.pf-v5-theme-dark .aegis-panel { border-right: 1px solid var(--aegis-line); }
+.aegis-panel > * { position: relative; }
+.aegis-panel__mark {
+  position: absolute;
+  right: -170px;
+  bottom: -130px;
+  width: 560px;
+  height: 610px;
+  color: #FFFFFF;
+  opacity: .08;
+  pointer-events: none;
+}
+.aegis-panel__logo { display: block; width: 112px; height: auto; }
+.aegis-panel__copy { display: flex; flex-direction: column; gap: 1.25rem; }
+.aegis-panel__headline {
+  margin: 0;
+  max-width: 27.5rem;
+  font-size: clamp(2rem, 2.8vw, 2.5rem);
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.aegis-panel__text {
+  margin: 0;
+  max-width: 26rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #B9BCC4;
+}
+.aegis-panel__standards { margin: 0; font-size: 0.75rem; letter-spacing: .02em; color: #9DA1AA; word-spacing: .2em; }
+
+.aegis-split__main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--aegis-card);
+}
+.aegis-split__main .pf-v5-c-login {
+  flex: 1;
+  display: flex;
+  flex-direction: column;     /* form centred, "Secured by Aegis" at the bottom */
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 0;
+  padding: 2.5rem 1.5rem;
+  background: transparent;
+}
+.aegis-split__main .pf-v5-c-login__container {
+  display: block;
+  width: 100%;
+  max-width: 23.75rem;     /* 380px form column */
+  margin-block: auto;
+  padding: 0;
+}
+.aegis-secured {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  margin: 0;
+  padding-top: 2.5rem;
+  font-size: 0.75rem;
+  color: var(--aegis-muted);
+}
+
+/* ---- Logo above the form (small screens only) ---------------------------
+   Image comes from --aegis-logo, so it flips in dark mode.                 */
+.pf-v5-c-login__header { display: none; padding: 0; margin: 0 0 2rem; }
+#kc-header-wrapper { padding: 0; }
+div.kc-logo-text {
+  background-image: var(--aegis-logo);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: left center;
+  width: 104px;
+  height: 32px;
+  margin: 0;
+}
+div.kc-logo-text span {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 1023px) {
+  .aegis-split { display: block; }
+  .aegis-panel { display: none; }
+  .pf-v5-c-login__header { display: block; }
+  .aegis-split__main { min-height: 100vh; }
+}
+@media (max-width: 480px) {
+  .aegis-split__main .pf-v5-c-login { padding: 1.75rem 1.25rem; }
+  .aegis-split__main .pf-v5-c-login__container { margin-block: 0 auto; }
+}
+
+/* ---- Form column (no card) ---------------------------------------------- */
+.pf-v5-c-login__main {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
+  overflow: visible;
+}
+.pf-v5-c-login__main-header {
+  border-top: none;
+  padding: 0 0 0.5rem;
+  row-gap: 0.5rem;
+}
+.pf-v5-c-login__main-body { padding: 0.75rem 0 0; }
+.pf-v5-c-login__main-footer { padding-inline: 0; }
+
+/* "New to Aegis? Create an account" under the title (login.ftl) */
+.aegis-subtitle {
+  margin: 0 0 0.75rem;
+  color: var(--aegis-muted);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+.aegis-subtitle #kc-registration-container,
+.aegis-subtitle #kc-registration { margin: 0; padding: 0; }
+
+/* page title */
+#kc-page-title, .pf-v5-c-login__main-header .pf-v5-c-title {
+  color: var(--aegis-ink);
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+@media (max-width: 480px) { #kc-page-title { font-size: 1.625rem; } }
+
+/* "Signing in as …  Restart" row */
+#kc-username, .kc-login-tooltip, #kc-attempted-username { color: var(--aegis-muted); }
+
+/* ---- Text --------------------------------------------------------------- */
+.pf-v5-c-login__main-body p,
+.instruction, #kc-info-message p {
+  color: var(--aegis-muted);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+/* Links: same black as the text, underlined so they still read as links */
+a, .pf-v5-c-button.pf-m-link, .pf-v5-c-button.pf-m-inline {
+  color: var(--aegis-ink);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+a:hover, .pf-v5-c-button.pf-m-link:hover, .pf-v5-c-button.pf-m-inline:hover {
+  color: var(--aegis-muted);
+  text-decoration-thickness: 2px;
+}
+/* links styled as buttons keep the button look */
+a.pf-v5-c-button:not(.pf-m-link):not(.pf-m-inline) { text-decoration: none; }
+:focus-visible { outline: 2px solid var(--aegis-accent); outline-offset: 2px; }
+
+/* ---- Form fields -------------------------------------------------------- */
+.pf-v5-c-form { gap: 1.125rem; }
+.pf-v5-c-form__label, .pf-v5-c-form__label-text {
+  color: var(--aegis-ink);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+/* PatternFly draws borders with ::before/::after — switch those off, draw our own */
+.pf-v5-c-form-control::before,
+.pf-v5-c-form-control::after,
+.pf-v5-c-input-group .pf-v5-c-button.pf-m-control::before,
+.pf-v5-c-input-group .pf-v5-c-button.pf-m-control::after {
+  border: none !important;
+}
+.pf-v5-c-form-control,
+.pf-v5-c-input-group {
+  background: var(--aegis-card);
+  border: 1px solid var(--aegis-line-strong);
+  border-radius: var(--aegis-radius-sm);
+  overflow: hidden;
+  transition: border-color .15s, box-shadow .15s;
+}
+.pf-v5-c-input-group .pf-v5-c-form-control,
+.pf-v5-c-input-group .pf-v5-c-button.pf-m-control {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+.pf-v5-c-form-control > input,
+.pf-v5-c-form-control > select,
+.pf-v5-c-form-control > textarea {
+  color: var(--aegis-ink);
+  font-family: var(--aegis-font);
+  font-size: 0.9375rem;
+  padding-block: 0.65rem;
+  outline: none;
+}
+.pf-v5-c-form-control:not(.pf-v5-c-input-group .pf-v5-c-form-control):focus-within,
+.pf-v5-c-input-group:focus-within {
+  border-color: var(--aegis-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--aegis-accent) 22%, transparent);
+}
+.pf-v5-c-form-control.pf-m-error,
+.pf-v5-c-form-control:has(input[aria-invalid="true"]),
+.pf-v5-c-input-group:has(input[aria-invalid="true"]) {
+  border-color: var(--aegis-danger-line) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--aegis-danger-line) 16%, transparent) !important;
+}
+.pf-v5-c-helper-text__item.pf-m-error, .pf-v5-c-helper-text__item-text, #input-error {
+  color: var(--aegis-danger);
+  font-size: 0.8125rem;
+}
+.pf-v5-c-check__label { color: var(--aegis-ink); font-size: 0.875rem; }
+.pf-v5-c-check__input { accent-color: var(--aegis-accent); }
+
+/* ---- Buttons ------------------------------------------------------------ */
+.pf-v5-c-button.pf-m-primary {
+  --pf-v5-c-button--m-primary--BackgroundColor: var(--aegis-ink);
+  --pf-v5-c-button--m-primary--hover--BackgroundColor: var(--aegis-ink-hover);
+  --pf-v5-c-button--m-primary--focus--BackgroundColor: var(--aegis-ink-hover);
+  --pf-v5-c-button--m-primary--active--BackgroundColor: var(--aegis-ink-hover);
+  --pf-v5-c-button--m-primary--Color: var(--aegis-on-ink);
+  --pf-v5-c-button--m-primary--hover--Color: var(--aegis-on-ink);
+  --pf-v5-c-button--m-primary--focus--Color: var(--aegis-on-ink);
+  background-color: var(--aegis-ink);
+  color: var(--aegis-on-ink);
+  border-radius: var(--aegis-radius-sm);
+  font-weight: 500;
+  min-height: 44px;
+}
+.pf-v5-c-button.pf-m-primary:hover { background-color: var(--aegis-ink-hover); color: var(--aegis-on-ink); }
+.pf-v5-c-button.pf-m-secondary,
+.pf-v5-c-button.pf-m-tertiary {
+  --pf-v5-c-button--after--BorderColor: var(--aegis-line-strong);
+  --pf-v5-c-button--m-secondary--Color: var(--aegis-ink);
+  --pf-v5-c-button--m-secondary--hover--Color: var(--aegis-ink);
+  color: var(--aegis-ink);
+  border-radius: var(--aegis-radius-sm);
+  font-weight: 500;
+  min-height: 44px;
+}
+.pf-v5-c-button.pf-m-secondary::after,
+.pf-v5-c-button.pf-m-tertiary::after { border-color: var(--aegis-line-strong) !important; border-radius: var(--aegis-radius-sm); }
+#kc-login, .pf-v5-c-button.pf-m-block, #kc-form-buttons .pf-v5-c-button { width: 100%; }
+.pf-v5-c-input-group .pf-v5-c-button.pf-m-control { color: var(--aegis-muted); }
+
+/* ---- Alerts (message.type: error, warning, success, info) ---------------- */
+.pf-v5-c-alert {
+  border-radius: 10px;
+  box-shadow: none;
+  border: 1px solid var(--aegis-info-line);
+  background: var(--aegis-info-soft);
+  --pf-v5-c-alert--BorderTopWidth: 0;
+  padding: 0.75rem 0.875rem;
+}
+.pf-v5-c-alert__title { color: var(--aegis-info); font-weight: 500; font-size: 0.875rem; }
+.pf-v5-c-alert.pf-m-danger { border-color: color-mix(in srgb, var(--aegis-danger-line) 45%, transparent); background: var(--aegis-danger-soft); }
+.pf-v5-c-alert.pf-m-danger .pf-v5-c-alert__title,
+.pf-v5-c-alert.pf-m-danger .pf-v5-c-alert__icon { color: var(--aegis-danger); }
+.pf-v5-c-alert.pf-m-warning { border-color: var(--aegis-warn-line); background: var(--aegis-warn-soft); }
+.pf-v5-c-alert.pf-m-warning .pf-v5-c-alert__title,
+.pf-v5-c-alert.pf-m-warning .pf-v5-c-alert__icon { color: var(--aegis-warn); }
+.pf-v5-c-alert.pf-m-success { border-color: color-mix(in srgb, var(--aegis-ok) 35%, transparent); background: var(--aegis-ok-soft); }
+.pf-v5-c-alert.pf-m-success .pf-v5-c-alert__title,
+.pf-v5-c-alert.pf-m-success .pf-v5-c-alert__icon { color: var(--aegis-ok); }
+
+/* ---- Footer band ("New to Aegis? Create an account", "Try another way") -- */
+.pf-v5-c-login__main-footer-band {
+  color: var(--aegis-muted);
+  border-top: 1px solid var(--aegis-line);
+  background: transparent;
+  font-size: 0.875rem;
+}
+#try-another-way, #kc-select-try-another-way-form a { color: var(--aegis-ink); }
+
+/* ---- Lists of choices (select-authenticator, OTP device picker) ---------- */
+.select-auth-box-parent, .pf-v5-c-data-list__item {
+  border: 1px solid var(--aegis-line);
+  border-radius: 12px;
+  background: var(--aegis-card);
+  margin-bottom: 0.625rem;
+}
+.select-auth-box-parent:hover, .pf-v5-c-data-list__item:hover { border-color: var(--aegis-accent); }
+.select-auth-box-headline { color: var(--aegis-ink); font-weight: 500; }
+.select-auth-box-desc { color: var(--aegis-muted); }
+.select-auth-box-icon, .select-auth-box-arrow { color: var(--aegis-accent); }
+
+/* ---- Recovery codes (login-recovery-authn-code-config) ------------------- */
+#kc-recovery-codes-list, .kc-recovery-codes-list {
+  font-family: var(--aegis-mono);
+  background: var(--aegis-soft);
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
+  color: var(--aegis-ink);
+}
+
+/* ==========================================================================
+   Aegis components used by our own templates
+   ========================================================================== */
+
+.aegis-lead { color: var(--aegis-muted); font-size: 0.875rem; line-height: 1.55; margin: 0 0 1rem; }
+.aegis-hint { color: var(--aegis-muted); font-size: 0.75rem; line-height: 1.5; margin: 0.375rem 0 0; }
+.aegis-sr-only {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* label row with a link on the right (Password … Forgot password?) */
+.aegis-label-row { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+.aegis-label-row a { font-size: 0.8125rem; }
+
+/* ---- Six-box code input (js/aegis.js) ----------------------------------- */
+.aegis-otp {
+  display: grid;
+  grid-template-columns: repeat(var(--aegis-otp-count, 6), minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.aegis-otp input {
+  width: 100%;
+  min-width: 0;
+  height: 3.25rem;
+  box-sizing: border-box;
+  padding: 0;
+  text-align: center;
+  font: 500 1.375rem/1 var(--aegis-mono);
+  color: var(--aegis-ink);
+  background: var(--aegis-card);
+  border: 1px solid var(--aegis-line-strong);
+  border-radius: 10px;
+  caret-color: var(--aegis-accent);
+}
+.aegis-otp input:focus {
+  outline: none;
+  border-color: var(--aegis-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--aegis-accent) 22%, transparent);
+}
+.aegis-otp.aegis-otp-error input { border-color: var(--aegis-danger-line); }
+@media (max-width: 360px) { .aegis-otp { gap: 0.35rem; } .aegis-otp input { height: 2.875rem; font-size: 1.125rem; } }
+/* when the script has taken over, hide the original single field visually */
+.aegis-otp-enhanced > .pf-v5-c-form-control { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); border: 0; }
+
+/* ---- OTP device picker (login-otp, two or more authenticators) ----------- */
+.aegis-devices { border: 0; margin: 0 0 1rem; padding: 0; display: grid; gap: 0.5rem; }
+.aegis-devices legend { font-size: 0.8125rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--aegis-ink); }
+.aegis-device {
+  display: flex; align-items: center; gap: 0.625rem;
+  padding: 0.75rem 0.875rem; border: 1px solid var(--aegis-line); border-radius: 10px;
+  font-size: 0.875rem; cursor: pointer; color: var(--aegis-ink);
+}
+.aegis-device:has(input:checked) { border-color: var(--aegis-accent); background: var(--aegis-accent-soft); }
+.aegis-device input { accent-color: var(--aegis-accent); }
+
+/* ---- Two-step verification setup (login-config-totp) --------------------- */
+.aegis-totp-steps { margin: 0 0 1.25rem; padding-left: 1.25rem; display: grid; gap: 0.875rem; color: var(--aegis-muted); font-size: 0.875rem; line-height: 1.55; }
+.aegis-totp-steps p { margin: 0; }
+.aegis-apps { margin: 0.375rem 0 0; padding-left: 1.125rem; }
+.aegis-qr {
+  display: block;
+  margin: 0.75rem auto 0.5rem;
+  width: 168px; height: 168px;
+  padding: 8px;
+  background: #FFFFFF;                 /* always white: scanners need contrast */
+  border: 1px solid var(--aegis-line);
+  border-radius: 12px;
+  image-rendering: pixelated;
+}
+.aegis-key {
+  margin: 0.5rem 0;
+  padding: 0.625rem 0.75rem;
+  font: 500 0.9375rem/1.4 var(--aegis-mono);
+  letter-spacing: 0.08em;
+  word-break: break-all;
+  color: var(--aegis-ink);
+  background: var(--aegis-soft);
+  border-radius: var(--aegis-radius-sm);
+}
+.aegis-totp-details { display: grid; grid-template-columns: auto 1fr; gap: 0.25rem 1rem; margin: 0.5rem 0 0; font-size: 0.8125rem; }
+.aegis-totp-details dt { color: var(--aegis-muted); }
+.aegis-totp-details dd { margin: 0; color: var(--aegis-ink); font-family: var(--aegis-mono); }
+
+/* ---- Info page: setup steps --------------------------------------------- */
+.aegis-steps { list-style: none; counter-reset: aegis-step; margin: 0 0 1.5rem; padding: 0; display: grid; gap: 0.5rem; }
+.aegis-steps li {
+  counter-increment: aegis-step;
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--aegis-line);
+  border-radius: 10px;
+  background: var(--aegis-soft);
+  color: var(--aegis-ink);
+  font-size: 0.875rem;
+}
+.aegis-steps li::before {
+  content: counter(aegis-step);
+  flex: none;
+  width: 1.5rem; height: 1.5rem;
+  border-radius: 50%;
+  background: var(--aegis-ink);
+  color: var(--aegis-on-ink);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 600;
+}
+a.aegis-button {
+  display: flex; align-items: center; justify-content: center;
+  text-decoration: none;
+}
