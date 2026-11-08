@@ -6,7 +6,7 @@
     2. <body> wraps the page in .aegis-split with the dark brand panel on the left.
     3. The logo comes from the theme, not the realm's HTML display name.
     4. "Secured by Aegis" line under the form.
-    5. Stylesheet links get ?v=<aegisAssetVersion> to beat the browser cache.
+    5. Stylesheet and script links get ?v=<aegisAssetVersion> to beat the browser cache.
 -->
 <#import "field.ftl" as field>
 <#import "footer.ftl" as loginFooter>
@@ -61,7 +61,13 @@
             <link href="${url.resourcesCommonPath}/${style}" rel="stylesheet" />
         </#list>
     </#if>
-    <#if themeResources?? && themeResources.styles?has_content>
+    <#-- Aegis: Keycloak 26 fills themeResources from theme.properties, so the first branch is the one
+         that normally runs; check aegisAssetVersion first so our ?v= is actually used. -->
+    <#if properties.aegisAssetVersion?has_content && properties.styles?has_content>
+        <#list properties.styles?split(' ') as style>
+            <link href="${url.resourcesPath}/${style}?v=${properties.aegisAssetVersion}" rel="stylesheet" />
+        </#list>
+    <#elseif themeResources?? && themeResources.styles?has_content>
         <@themeResourceTags.renderStyles themeResources.styles url.resourcesPath />
     <#elseif properties.styles?has_content>
         <#list properties.styles?split(' ') as style>
@@ -97,11 +103,17 @@
           </#outputformat>
       </script>
     </#if>
-    <#if themeResources?? && themeResources.scripts?has_content>
+    <#-- Aegis: same as the stylesheets above -->
+    <#if properties.aegisAssetVersion?has_content && properties.scripts?has_content>
+        <#list properties.scripts?split(' ') as script>
+            <script src="${url.resourcesPath}/${script}?v=${properties.aegisAssetVersion}" type="text/javascript" defer></script>
+        </#list>
+    <#elseif themeResources?? && themeResources.scripts?has_content>
         <@themeResourceTags.renderScripts themeResources.scripts url.resourcesPath "text/javascript" />
     <#elseif properties.scripts?has_content>
         <#list properties.scripts?split(' ') as script>
-            <script src="${url.resourcesPath}/${script}" type="text/javascript"></script>
+            <#-- Aegis: ?v= like the stylesheets; defer so it runs after the page is parsed -->
+            <script src="${url.resourcesPath}/${script}<#if properties.aegisAssetVersion?has_content>?v=${properties.aegisAssetVersion}</#if>" type="text/javascript" defer></script>
         </#list>
     </#if>
     <#if scripts??>

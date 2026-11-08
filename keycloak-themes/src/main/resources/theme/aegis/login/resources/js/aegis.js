@@ -3,8 +3,8 @@
  * Pages work without this file; it only improves them.
  *
  * 1. Six-box code input
- *    Any <input data-aegis-otp="6"> (Keycloak's own otp / totp field) gets
- *    one box per digit. The boxes only display: their digits are always
+ *    Any <input data-aegis-otp="6">, or Keycloak's own id="otp" / id="totp"
+ *    field on pages we don't override, gets one box per digit. The boxes only display: their digits are always
  *    copied back into the original field, which is what the form submits.
  *    Typing moves forward, Backspace moves back, arrow keys move, and
  *    pasting or autofill (one-time-code) fills every box at once.
@@ -22,6 +22,8 @@
   }
 
   function enhanceOtp(original) {
+    if (original.getAttribute('data-aegis-enhanced')) return;   // never build boxes twice
+    original.setAttribute('data-aegis-enhanced', 'true');
     var count = parseInt(original.getAttribute('data-aegis-otp'), 10) || 6;
     var group = original.closest('.pf-v5-c-form__group') || original.parentNode;
     var form = original.form;
@@ -125,6 +127,7 @@
     original.removeAttribute('autocomplete');
     var control = original.closest('.pf-v5-c-form-control') || original;
     control.parentNode.insertBefore(wrap, control);
+    control.classList.add('aegis-otp-source');   // hidden by aegis.css; still submits
     group.classList.add('aegis-otp-enhanced');
 
     // keep any value Keycloak re-rendered (normally none)
@@ -153,8 +156,12 @@
     });
   }
 
+  // Our templates mark code fields with data-aegis-otp. Keycloak's own pages
+  // (ones we don't override) use id="otp" / id="totp"; treat those as 6 digits.
+  var OTP_FIELDS = 'input[data-aegis-otp], input#otp[type="text"], input#totp[type="text"]';
+
   function init() {
-    Array.prototype.forEach.call(document.querySelectorAll('input[data-aegis-otp]'), enhanceOtp);
+    Array.prototype.forEach.call(document.querySelectorAll(OTP_FIELDS), enhanceOtp);
     enhanceToggles();
   }
 

@@ -48,6 +48,5 @@
         <button id="kc-login" name="login" type="submit" class="pf-v5-c-button pf-m-primary pf-m-block">${msg("aegisVerify")}</button>
       </div>
     </form>
-    <script src="${url.resourcesPath}/js/aegis.js" defer></script>
   </#if>
 </@layout.registrationLayout>

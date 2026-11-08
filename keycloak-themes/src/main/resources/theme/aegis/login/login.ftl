@@ -78,7 +78,6 @@
             <button id="kc-login" name="login" type="submit" class="pf-v5-c-button pf-m-primary pf-m-block">${msg("doLogIn")}</button>
           </div>
         </form>
-        <script src="${url.resourcesPath}/js/aegis.js" defer></script>
       </#if>
     </div>
 

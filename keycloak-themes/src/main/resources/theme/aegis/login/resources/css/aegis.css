@@ -446,7 +446,16 @@ a.pf-v5-c-button:not(.pf-m-link):not(.pf-m-inline) { text-decoration: none; }
 .aegis-otp.aegis-otp-error input { border-color: var(--aegis-danger-line); }
 @media (max-width: 360px) { .aegis-otp { gap: 0.35rem; } .aegis-otp input { height: 2.875rem; font-size: 1.125rem; } }
 /* when the script has taken over, hide the original single field visually */
-.aegis-otp-enhanced > .pf-v5-c-form-control { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); border: 0; }
+/* The original Keycloak field: kept in the form (it is what gets submitted) but
+   visually hidden once the boxes are shown. Class added by aegis.js. */
+.aegis-otp-source {
+  position: absolute !important;
+  width: 1px !important; height: 1px !important;
+  margin: -1px; padding: 0 !important;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+  border: 0 !important; box-shadow: none !important;
+  white-space: nowrap;
+}
 
 /* ---- OTP device picker (login-otp, two or more authenticators) ----------- */
 .aegis-devices { border: 0; margin: 0 0 1rem; padding: 0; display: grid; gap: 0.5rem; }

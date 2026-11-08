@@ -113,6 +113,5 @@
         </#if>
       </div>
     </form>
-    <script src="${url.resourcesPath}/js/aegis.js" defer></script>
   </#if>
 </@layout.registrationLayout>
